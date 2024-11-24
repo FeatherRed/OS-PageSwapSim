@@ -43,9 +43,9 @@ class Process:
         return page_table
 
     def __build_table(self):
-        header = ["访问页面"]
-        table = [["物理块" + str(i)] for i in self.frame_list]
-        table.append(["是否缺页"]) # 添加缺页行
+        header = ["Visit"]
+        table = [["physical blocks-" + str(i)] for i in self.frame_list]
+        table.append(["Page missing"]) # 添加缺页行
         return header, table
 
 
@@ -78,13 +78,12 @@ class Process:
             self.table[i].append(new_column[i])
         # self.__show_table()
 
-    def show_table(self, delay = 1):
-        os.system('cls')
+    def show_table(self, delay = 0.6):
         for i in range(len(self.headers)):
             j = i + 1
             tep_table = [row[:j] for row in self.table]
-            os.system('cls')
-            print(tabulate(tep_table, headers = self.headers[:j], tablefmt = 'presto'))
+            os.system('clear')
+            print(tabulate(tep_table, headers = self.headers[:j], tablefmt = 'presto', stralign = "center"))
             time.sleep(delay)
 
 if __name__ == '__main__':

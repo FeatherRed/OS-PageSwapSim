@@ -93,4 +93,4 @@ if __name__ == '__main__':
     for pages in zip(page_access, page_modify):
         fault = process_page_step(A, pages, fifo_fun)
         # A.display_frame()
-    # A.show_table()
+    A.show_table()
