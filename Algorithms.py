@@ -50,42 +50,6 @@ def fifo(pages, frame_size):
 
     return page_faults
 
-def fifo_process(process, pages):
-    frame = []
-    page_faults = 0
-    index = 0
-
-    pages_access = pages['access']
-    pages_modify = pages['modify']
-
-    for page, rw in zip(pages_access, pages_modify):
-        if process.page_table[page]['valid_bit'] == 0:
-            if len(frame) < process.frame_size:
-                frame.append(page)
-                frame_id = process.frame_id[len(frame) - 1]
-                process.frame_to_page_table[frame_id] = page
-            else:
-                old_page = frame[index]
-                frame[index] = page
-                frame_id = process.frame_id[index]
-                process.frame_to_page_table[frame_id] = page
-                index = (index + 1) % process.frame_size
-
-                process.page_table[old_page]['frame_id'] = -1
-                process.page_table[old_page]['valid_bit'] = 0
-                process.page_table[old_page]['access_bit'] = 0
-
-
-                pass
-            # 页面 加入
-            page_faults += 1
-            process.page_table[page]['frame_id'] = frame_id
-            process.page_table[page]['valid_bit'] = 1
-            process.page_table[page]['access_bit'] = 1
-            process.page_table[page]['modify_bit'] = rw
-
-
-
 def lru(pages, frame_size):
     frame = []
     page_faults = 0
@@ -200,6 +164,6 @@ if __name__ == '__main__':
     enhanced_clock_pages_rw = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
 
 
-    print(enhanced_clock(enhanced_clock_pages, main_num, enhanced_clock_pages_rw))
+    print(simple_clock(clock_pages, main_num))
     # T1 = time.perf_counter()
     # print((T1 - T0) * 1000)

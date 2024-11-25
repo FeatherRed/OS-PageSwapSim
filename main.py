@@ -1,32 +1,11 @@
 import time
 import os
 from process import Process
+from utils import FIFO, OPT, LRU, S_CLOCK, E_CLOCK
 
-class fifo:
-    def __init__(self, frame_size):
-        self.frame_size = frame_size
-        self.frame = []
-        self.pointer = 0
-
-    def reset(self):
-        self.frame = []
-        self.pointer = 0
-
-    def step(self, page):
-        old_page = None
-        if len(self.frame) < self.frame_size:
-            self.frame.append(page)
-            frame_id = len(self.frame) - 1
-        else:
-            old_page = self.frame[self.pointer]
-            self.frame[self.pointer] = page
-            frame_id = self.pointer
-            self.pointer = (self.pointer + 1) % self.frame_size
-        return frame_id, old_page
-
-
-def process_page_step(process, pages, function):
-    page, rw = pages
+def process_page_step(process, pages, function, page_list = None):
+    # page_list is for OPT
+    page_id, (page, rw) = pages
 
     if page >= process.total_pages:
         raise ValueError(f"Page {page} exceeds process total pages {process.total_pages}")
@@ -41,7 +20,7 @@ def process_page_step(process, pages, function):
         # 页面不存在 缺页中断
         # print(f"缺页中断：进程 {process.pid} 访问页面 {page}")
 
-        frame_id, old_page = function.step(page)
+        frame_id, old_page = function.step((page, rw), page_id, page_list)
 
         # board
         if old_page is None:
@@ -69,6 +48,7 @@ def process_page_step(process, pages, function):
     else:
         page_table[page]['modify_bit'] = rw
         out = 0
+    function.update((page, rw), page_id)
     process.update_table(page, out)
     return out
 
@@ -77,7 +57,7 @@ def process_page_step(process, pages, function):
 if __name__ == '__main__':
     pid = 1
     page_size = 4096  # 4KB
-    frame_list = [3, 5, 8]
+    frame_list = [3, 5, 8, 10]
     path_size = page_size * 10
     A = Process(pid, frame_list, path_size, page_size)
 
@@ -89,8 +69,26 @@ if __name__ == '__main__':
     page_access = pages['access']
     page_modify = pages['modify']
 
-    fifo_fun = fifo(A.frame_size)
-    for pages in zip(page_access, page_modify):
-        fault = process_page_step(A, pages, fifo_fun)
+    lru_pages = {
+        'access': [1,2,3,4,1,2,5,1,2,3,4,5],
+        'modify': [0] * 12
+    }
+
+    clock_pages = {
+        'access': [1, 3, 4, 2, 5, 4, 7, 4],
+        'modify': [0] * 8
+    }
+    page_access = clock_pages['access']
+    page_modify = clock_pages['modify']
+
+    e_clock_pages = {
+        'access': [0, 1, 3, 6, 2, 4, 5, 2, 5, 0, 3, 1, 2, 5, 4, 1, 0],
+        'modify': [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
+    }
+    page_access = e_clock_pages['access']
+    page_modify = e_clock_pages['modify']
+    fifo_fun = E_CLOCK(A.frame_size)
+    for pages in enumerate(zip(page_access, page_modify)):
+        fault = process_page_step(A, pages, fifo_fun, page_access)
         # A.display_frame()
     A.show_table()
