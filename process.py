@@ -1,10 +1,12 @@
 import time
 import os
 from tabulate import tabulate
+from utils import *
+from colorama import Fore, init, Back
 
 
 class Process:
-    def __init__(self, pid, frame_list, logic_size, page_size):
+    def __init__(self, pid, frame_list, logic_size, page_size, access_window = 3):
         self.pid = pid
         self.frame_list = frame_list
         self.frame_size = len(frame_list)
@@ -12,11 +14,13 @@ class Process:
         self.page_size = page_size
         self.total_pages = int(self.logic_size / self.page_size)
 
+        self.access_window = access_window
+        self.access_history = []
+
         self.page_table = self.__build_page_table()
         self.frame = [-1] * self.frame_size
 
         self.headers, self.table = self.__build_table()
-
 
     def __str__(self):
         return (f"Process {self.pid}:\n"
@@ -31,64 +35,99 @@ class Process:
         创建页表、初始化数据项
         :return:
         '''
-        page_table = {}
+        header = ["Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)", "Swap Address"]
+        page_table = []
         for page in range(self.total_pages):
-            page_table[page] = {
-                'frame': -1,  # 初始位 -1 表示页面不在内存
-                'valid_bit': 0,  # 状态位 0 表示页面无效
-                'access_bit': 0,  # 访问字段 0 表示未被访问
-                'modify_bit': 0,  # 修改位 0 表示未被需改
-                'swap_address': None  # 外存地址, 初始为None
-            }
+            page_table.append([str(page), -1, 0, 0, -1, "-"])
         return page_table
 
     def __build_table(self):
         header = ["Visit"]
         table = [["physical blocks-" + str(i)] for i in self.frame_list]
-        table.append(["Page missing"]) # 添加缺页行
+        table.append(["Page missing"])  # 添加缺页行
         return header, table
 
+    def __update_access_history(self, page):
+        self.access_history.append(page)
+        if len(self.access_history) > self.access_window:
+            removed_page = self.access_history.pop(0)
+            self.page_table[removed_page][3] -= 1
+        self.page_table[page][3] += 1
+
+    def reset(self):
+        self.access_history = []
+
+        self.page_table = self.__build_page_table()
+        self.frame = [-1] * self.frame_size
+
+        self.headers, self.table = self.__build_table()
 
     def display_page_table(self):
-        print(f"Page Table for Process {self.pid}:")
-        print(f"{'Page':<6}{'Frame':<6}{'Valid':<6}{'Access':<6}{'Modify':<6}{'Swap Address':<12}")
-        for page, data in self.page_table.items():
-            # 使用 .get() 方法获取字典值，并提供默认值
-            frame = data.get('frame', '-')
-            valid_bit = data.get('valid_bit', '-')
-            access_bit = data.get('access_bit', '-')
-            modify_bit = data.get('modify_bit', '-')
-            swap_address = data.get('swap_address', '-')
+        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
+                  "Swap Address" + Fore.RESET]
 
-            # 防止 None 出现，确保每个字段都是字符串格式
-            print(f"{page:<6}{frame if frame is not None else '-':<6}"
-                  f"{valid_bit if valid_bit is not None else '-':<6}"
-                  f"{access_bit if access_bit is not None else '-':<6}"
-                  f"{modify_bit if modify_bit is not None else '-':<6}"
-                  f"{swap_address if swap_address is not None else '-':<10}")
+        table = tabulate(self.page_table, headers = header, tablefmt = 'presto', stralign = 'center')
+        lines = cal_tabulate_lines(table)
+        print(table)
+        time.sleep(0.5)
+        # 清
+        clear_partial_lines(lines)
 
     def display_frame(self):
         print(self.frame)
 
+    def update_page_table(self, pages, frame_id, old_page):
+        page, rw = pages
+
+        if old_page is not None:
+            self.page_table[old_page][0] = str(old_page)
+            self.page_table[old_page][1] = -1
+            self.page_table[old_page][2] = 0
+            self.page_table[old_page][4] = -1
+            self.page_table[old_page][-1] = str('-')
+
+            self.table[frame_id][-1] = Fore.GREEN + self.table[frame_id][-1] + Fore.RESET
+
+        self.page_table[page][0] = Fore.GREEN + self.page_table[page][0]
+        self.page_table[page][1] = self.frame_list[frame_id]
+        self.page_table[page][2] = 1
+        self.page_table[page][4] = rw
+        self.page_table[page][-1] = self.page_table[page][-1] + Fore.RESET
+        self.__update_access_history(page)
+
     def update_table(self, page, out):
         self.headers.append(str(page))
-        new_column = [i if i > -1 else "" for i in self.frame]
+        new_column = [str(i) if i > -1 else "" for i in self.frame]
         new_column.append("√" if out else "")
         for i in range(len(self.table)):
             self.table[i].append(new_column[i])
         # self.__show_table()
 
+    def show_page_table(self):
+        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
+                  "Swap Address" + Fore.RESET]
+        table = tabulate(self.page_table, headers = header, tablefmt = 'presto', stralign = 'center')
+        print(table)
+
     def show_table(self, delay = 0.6):
         for i in range(len(self.headers)):
             j = i + 1
             tep_table = [row[:j] for row in self.table]
-            os.system('clear')
-            print(tabulate(tep_table, headers = self.headers[:j], tablefmt = 'presto', stralign = "center"))
+            headers = self.headers[:j]
+            headers[0] = Fore.RED + headers[0]
+            headers[-1] = headers[-1] + Fore.RESET
+
+            disp_table = tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = "center")
+            table_line = cal_tabulate_lines(disp_table)
+            print(disp_table)
             time.sleep(delay)
+            if i < len(self.headers) - 1:
+                clear_partial_lines(table_line)
+
 
 if __name__ == '__main__':
     pid = 1
-    page_size = 4096 # 4KB
+    page_size = 4096  # 4KB
     frame_list = [3, 5, 8]
     path_size = page_size * 10
     A = Process(pid, frame_list, path_size, page_size)
