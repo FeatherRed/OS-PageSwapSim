@@ -92,7 +92,7 @@ class Process:
         print(summary_text)
         time.sleep(0.3)
         # 清
-        clear_partial_lines(lines + 4)
+        clear_partial_lines(lines + 3)
 
     def display_frame(self):
         print(self.frame)
