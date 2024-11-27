@@ -16,14 +16,14 @@ def process_page_step(process, pages, function, page_list = None):
     # 检查页表中是否已有该页记录
     page_table = process.page_table
     page_data = page_table[page]  # list
-    frame = page_data[1]
+    frame = int(page_data[1])
     old_page = None
 
     # 输出进程页表
 
     process.display_page_table()
 
-    if page_data is None or page_data[2] == 0:
+    if page_data is None or int(page_data[2]) == 0:
         # 页面不存在 缺页中断
         # print(f"缺页中断：进程 {process.pid} 访问页面 {page}")
 
@@ -87,13 +87,15 @@ if __name__ == '__main__':
     for algorithm in algorithms:
         A.reset()
         alg_fun = eval(algorithm)(A.frame_size)
-        print(Fore.CYAN + f'--------------- PID {A.pid} Use {Style.BRIGHT}{algorithm}{Style.NORMAL}---------------' + Fore.RESET)
+        # print(Fore.CYAN + f'--------------- PID {A.pid} Use {Style.BRIGHT}{algorithm}{Style.NORMAL}---------------' + Fore.RESET)
+        A.welcome(algorithm)
         for pages in enumerate(zip(page_access, page_modify)):
             fault = process_page_step(A, pages, alg_fun, page_access)
-        print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Page Table ---------------' + Fore.RESET)
-        A.show_page_table()
-        print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Frame Table ---------------' + Fore.RESET)
-        A.show_table()
+        # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Page Table ---------------' + Fore.RESET)
+        A.show_page_table(algorithm)
+        # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Frame Table ---------------' + Fore.RESET)
+        A.show_table(algorithm)
+        print('\n\n')
 
     # print(f"进程{A.pid}正在访问")
     # for pages in enumerate(zip(page_access, page_modify)):

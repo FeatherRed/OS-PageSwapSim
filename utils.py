@@ -9,4 +9,4 @@ def clear_partial_lines(n):
 
 def cal_tabulate_lines(table):
     table_lines = table.splitlines()
-    return len(table_lines)
+    return table_lines[1], len(table_lines)

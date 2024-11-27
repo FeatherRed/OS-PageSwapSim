@@ -2,7 +2,7 @@ import time
 import os
 from tabulate import tabulate
 from utils import *
-from colorama import Fore, init, Back
+from colorama import Fore, init, Back, Style
 
 
 class Process:
@@ -54,6 +54,14 @@ class Process:
             self.page_table[removed_page][3] -= 1
         self.page_table[page][3] += 1
 
+    def welcome(self, algoirthm_name):
+        del_line = "---------------------------------------------------------------------------------------------"
+        welcome_text = f"PID {self.pid} Use {algoirthm_name}"
+        welcome_text = welcome_text.center(len(del_line))
+        welcome_text = Back.WHITE + Fore.BLACK + welcome_text + Fore.RESET + Back.RESET
+        print(del_line)
+        print(welcome_text)
+
     def reset(self):
         self.access_history = []
 
@@ -65,13 +73,16 @@ class Process:
     def display_page_table(self):
         header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
                   "Swap Address" + Fore.RESET]
+        page_table = self.page_table
 
-        table = tabulate(self.page_table, headers = header, tablefmt = 'presto', stralign = 'center')
-        lines = cal_tabulate_lines(table)
+        table = tabulate(page_table, headers = header, tablefmt = 'presto', stralign = 'center', numalign = 'center', colalign = 'center')
+        del_line, lines = cal_tabulate_lines(table)
+
+        print(del_line)
         print(table)
-        time.sleep(0.5)
+        time.sleep(0.3)
         # 清
-        clear_partial_lines(lines)
+        clear_partial_lines(lines + 1)
 
     def display_frame(self):
         print(self.frame)
@@ -103,13 +114,23 @@ class Process:
             self.table[i].append(new_column[i])
         # self.__show_table()
 
-    def show_page_table(self):
+    def show_page_table(self, algorithm_name):
         header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
                   "Swap Address" + Fore.RESET]
-        table = tabulate(self.page_table, headers = header, tablefmt = 'presto', stralign = 'center')
+        page_table = self.page_table
+
+        table = tabulate(page_table, headers = header, tablefmt = 'presto')
+
+        del_line, _ = cal_tabulate_lines(table)
+        title_text = f"{algorithm_name} Page table"
+        title_text = title_text.center(len(del_line))
+        title_text = Fore.CYAN + Style.BRIGHT + title_text + Style.NORMAL + Fore.RESET
+        print(del_line)
+        print(title_text)
+        print(del_line)
         print(table)
 
-    def show_table(self, delay = 0.6):
+    def show_table(self, algorithm_name, delay = 0.3):
         for i in range(len(self.headers)):
             j = i + 1
             tep_table = [row[:j] for row in self.table]
@@ -118,7 +139,15 @@ class Process:
             headers[-1] = headers[-1] + Fore.RESET
 
             disp_table = tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = "center")
-            table_line = cal_tabulate_lines(disp_table)
+
+            del_line, table_line = cal_tabulate_lines(disp_table)
+            title_text = f'{algorithm_name} Frame Table'
+            title_text = title_text.center(len(del_line))
+            title_text = Fore.CYAN + Style.BRIGHT + title_text + Style.NORMAL + Fore.RESET
+            table_line += 3
+            print(del_line)
+            print(title_text)
+            print(del_line)
             print(disp_table)
             time.sleep(delay)
             if i < len(self.headers) - 1:
