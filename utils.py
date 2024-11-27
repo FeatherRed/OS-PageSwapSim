@@ -21,10 +21,14 @@ def show_all_table(table: list, delay: int = 1):
         tep_tables = [[row[:j] for row in alg_table] for alg_table in table]
         headers = access_list[:j]
 
-        disp_tables = [tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = 'center') for tep_table in tep_tables]
+        disp_tables = [tabulate(tep_tables[0], headers = headers, tablefmt = 'presto', stralign = 'center')]
 
-        del_line, table_line = cal_tabulate_lines(disp_tables[0])
-        total_line = 0# todo
+        for k in range(1, 5):
+            disp_tables.append(tabulate(tep_tables[k], tablefmt = 'presto', stralign = 'center'))
+        # disp_tables = [tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = 'center') for tep_table in tep_tables]
+
+        del_line, table_line = cal_tabulate_lines(disp_tables[1])
+        total_line = 1 # todo
         title_texts = algorithms
         title_texts = [title_text.center(len(del_line)) for title_text in title_texts]
         title_texts = [Fore.CYAN + Style.BRIGHT + title_text + Style.NORMAL + Fore.RESET for title_text in title_texts]
