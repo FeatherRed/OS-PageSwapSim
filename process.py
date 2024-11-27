@@ -78,12 +78,12 @@ class Process:
 
         table = tabulate(page_table, headers = header, tablefmt = 'presto', stralign = 'center', numalign = 'center', colalign = 'center')
         del_line, lines = cal_tabulate_lines(table)
-        summary_text = f"进程 PID: {self.pid} 访问页面 {page}"
-        summary_text = summary_text + " 读写数据" if rw else summary_text + " 读数据"
+        summary_text = f"Process PID: {self.pid} accessed page {page}"
+        summary_text += " for reading and writing" if rw else " for reading"
         if flag:
-            summary_text = summary_text + f"，页面 {page} 在内存中，直接访问"
+            summary_text += f", page {page} was in memory, direct access"
         else:
-            summary_text = summary_text + f"，页面 {page} 不在内存中，发生缺页中断"
+            summary_text += f", page {page} was not in memory, a page fault occurred"
         summary_text = summary_text.center(len(del_line))
         summary_text = Fore.WHITE + summary_text + Fore.RESET
         print(del_line)
