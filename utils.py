@@ -26,7 +26,7 @@ def show_all_table(table: list, delay = 1):
         disp_tables = [tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = 'center') for tep_table in tep_tables]
 
         del_line, table_line = cal_tabulate_lines(disp_tables[0])
-        total_line = 0# todo
+        total_line = table_line + 4# todo
         title_texts = [f'{algorithm_name} Frame Table' for algorithm_name in algorithms]
         title_texts = [title_text.center(len(del_line)) for title_text in title_texts]
         title_texts = [Fore.CYAN + Style.BRIGHT + title_text + Style.NORMAL + Fore.RESET for title_text in title_texts]
