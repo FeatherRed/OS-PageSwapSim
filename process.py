@@ -108,7 +108,7 @@ class Process:
 
     def update_table(self, pages, out):
         page, rw = pages
-        self.headers.append(Fore.RED + str(page) + Fore.RESET if rw else Fore.BLACK + str(page) + Fore.RESET)
+        self.headers.append(Fore.RED + str(page) + Fore.RESET if rw else Fore.BLUE + str(page) + Fore.RESET)
         new_column = [str(i) if i > -1 else "" for i in self.frame]
         new_column.append("√" if out else "")
         for i in range(len(self.table)):
@@ -136,8 +136,6 @@ class Process:
             j = i + 1
             tep_table = [row[:j] for row in self.table]
             headers = self.headers[:j]
-            headers[0] = Back.WHITE + headers[0]
-            headers[-1] = headers[-1] + Back.RESET
 
             disp_table = tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = "center")
 

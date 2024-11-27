@@ -20,8 +20,6 @@ def show_all_table(table: list, delay = 1):
         j = i + 1
         tep_tables = [[row[:j] for row in alg_table] for alg_table in table]
         headers = access_list[:j]
-        headers[0] = Back.WHITE + headers[0]
-        headers[-1] = headers[-1] + Back.RESET
 
         disp_tables = [tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = 'center') for tep_table in tep_tables]
 
