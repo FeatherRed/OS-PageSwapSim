@@ -27,7 +27,8 @@ def show_all_table(table: list, delay: int = 1):
             disp_tables.append(tabulate(tep_tables[k], tablefmt = 'presto', stralign = 'center'))
         # disp_tables = [tabulate(tep_table, headers = headers, tablefmt = 'presto', stralign = 'center') for tep_table in tep_tables]
 
-        del_line, table_line = cal_tabulate_lines(disp_tables[1])
+        del_line, table_line = cal_tabulate_lines(disp_tables[0])
+        table_line -= 2
         total_line = 1 # todo
         title_texts = algorithms
         title_texts = [title_text.center(len(del_line)) for title_text in title_texts]
