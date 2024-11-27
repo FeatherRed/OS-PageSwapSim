@@ -16,37 +16,28 @@ def process_page_step(process, pages, function, page_list = None):
     # 检查页表中是否已有该页记录
     page_table = process.page_table
     page_data = page_table[page]  # list
-    frame = int(page_data[1])
+    frame = page_data[1]
     old_page = None
 
     # 输出进程页表
 
-    # process.display_page_table()
 
-    if page_data is None or int(page_data[2]) == 0:
+    if page_data is None or page_data[2] == 0:
         # 页面不存在 缺页中断
         # print(f"缺页中断：进程 {process.pid} 访问页面 {page}")
-
+        process.display_page_table((page, rw), flag = 1)
         frame_id, old_page = function.step((page, rw), page_id, page_list)
 
         process.frame[frame_id] = page
         out = 1
     else:
+        process.display_page_table((page, rw), flag = 0)
         frame_id = process.frame_list.index(frame)
         out = 0
     process.update_page_table((page, rw), frame_id, old_page)
     function.update((page, rw), page_id)
     process.update_table((page, rw), out)
     return out
-
-
-def main():
-    A = Process(pid, frame_list, path_size, page_size)
-    e_clock_pages = {
-        'access': [0, 1, 3, 6, 2, 4, 5, 2, 5, 0, 3, 1, 2, 5, 4, 1, 0],
-        'modify': [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
-    }
-
 
 if __name__ == '__main__':
     pid = 1
@@ -92,20 +83,10 @@ if __name__ == '__main__':
         for pages in enumerate(zip(page_access, page_modify)):
             fault = process_page_step(A, pages, alg_fun, page_access)
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Page Table ---------------' + Fore.RESET)
-        # A.show_page_table(algorithm)
+        A.show_page_table(algorithm)
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Frame Table ---------------' + Fore.RESET)
         # A.show_table(algorithm)
         algorithms_table[0] = A.headers if algorithms_table[0] is None else algorithms_table[0]
         algorithms_table.append(A.table)
         print('\n\n')
     show_all_table(algorithms_table)
-
-
-
-
-    # print(f"进程{A.pid}正在访问")
-    # for pages in enumerate(zip(page_access, page_modify)):
-    #     fault = process_page_step(A, pages, fifo_fun, page_access)
-    #     # A.display_frame()
-    # A.show_page_table()
-    # A.show_table()

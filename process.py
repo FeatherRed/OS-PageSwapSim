@@ -70,19 +70,29 @@ class Process:
 
         self.headers, self.table = self.__build_table()
 
-    def display_page_table(self):
+    def display_page_table(self, pages, flag = 0):
+        page, rw = pages
         header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
                   "Swap Address" + Fore.RESET]
         page_table = self.page_table
 
         table = tabulate(page_table, headers = header, tablefmt = 'presto', stralign = 'center', numalign = 'center', colalign = 'center')
         del_line, lines = cal_tabulate_lines(table)
-
+        summary_text = f"进程 PID: {self.pid} 访问页面 {page}"
+        summary_text = summary_text + " 读写数据" if rw else summary_text + " 读数据"
+        if flag:
+            summary_text = summary_text + f"，页面 {page} 在内存中，直接访问"
+        else:
+            summary_text = summary_text + f"，页面 {page} 不在内存中，发生缺页中断"
+        summary_text = summary_text.center(len(del_line))
+        summary_text = Fore.WHITE + summary_text + Fore.RESET
         print(del_line)
         print(table)
+        print(del_line)
+        print(summary_text)
         time.sleep(0.3)
         # 清
-        clear_partial_lines(lines + 1)
+        clear_partial_lines(lines + 4)
 
     def display_frame(self):
         print(self.frame)

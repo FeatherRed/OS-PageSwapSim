@@ -12,7 +12,7 @@ def cal_tabulate_lines(table):
     return table_lines[1], len(table_lines)
 
 
-def show_all_table(table: list, delay = 1):
+def show_all_table(table: list, delay: int = 1):
     algorithms = ['OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
     access_list = table[0]
     table = table[1:]
@@ -25,7 +25,7 @@ def show_all_table(table: list, delay = 1):
 
         del_line, table_line = cal_tabulate_lines(disp_tables[0])
         total_line = 0# todo
-        title_texts = [f'{algorithm_name} Frame Table' for algorithm_name in algorithms]
+        title_texts = algorithms
         title_texts = [title_text.center(len(del_line)) for title_text in title_texts]
         title_texts = [Fore.CYAN + Style.BRIGHT + title_text + Style.NORMAL + Fore.RESET for title_text in title_texts]
 
