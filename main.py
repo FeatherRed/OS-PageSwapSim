@@ -21,7 +21,7 @@ def process_page_step(process, pages, function, page_list = None):
 
     # 输出进程页表
 
-    process.display_page_table()
+    # process.display_page_table()
 
     if page_data is None or int(page_data[2]) == 0:
         # 页面不存在 缺页中断
@@ -55,24 +55,24 @@ if __name__ == '__main__':
     path_size = page_size * 10
     A = Process(pid, frame_list, path_size, page_size)
 
-    pages = {
-        'access': [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1],
-        'modify': [0] * 20
-    }
-    page_access = pages['access']
-    page_modify = pages['modify']
-
-    lru_pages = {
-        'access': [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5],
-        'modify': [0] * 12
-    }
-
-    clock_pages = {
-        'access': [1, 3, 4, 2, 5, 4, 7, 4],
-        'modify': [0] * 8
-    }
-    page_access = clock_pages['access']
-    page_modify = clock_pages['modify']
+    # pages = {
+    #     'access': [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1],
+    #     'modify': [0] * 20
+    # }
+    # page_access = pages['access']
+    # page_modify = pages['modify']
+    #
+    # lru_pages = {
+    #     'access': [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5],
+    #     'modify': [0] * 12
+    # }
+    #
+    # clock_pages = {
+    #     'access': [1, 3, 4, 2, 5, 4, 7, 4],
+    #     'modify': [0] * 8
+    # }
+    # page_access = clock_pages['access']
+    # page_modify = clock_pages['modify']
 
     e_clock_pages = {
         'access': [0, 1, 3, 6, 2, 4, 5, 2, 5, 0, 3, 1, 2, 5, 4, 1, 0],
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     fifo_fun = E_CLOCK(A.frame_size)
 
     algorithms = ['OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
-
+    algorithms_table = [None]
     for algorithm in algorithms:
         A.reset()
         alg_fun = eval(algorithm)(A.frame_size)
@@ -92,10 +92,16 @@ if __name__ == '__main__':
         for pages in enumerate(zip(page_access, page_modify)):
             fault = process_page_step(A, pages, alg_fun, page_access)
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Page Table ---------------' + Fore.RESET)
-        A.show_page_table(algorithm)
+        # A.show_page_table(algorithm)
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Frame Table ---------------' + Fore.RESET)
-        A.show_table(algorithm)
+        # A.show_table(algorithm)
+        algorithms_table[0] = A.headers if algorithms_table[0] is None else algorithms_table[0]
+        algorithms_table.append(A.table)
         print('\n\n')
+    show_all_table(algorithms_table)
+
+
+
 
     # print(f"进程{A.pid}正在访问")
     # for pages in enumerate(zip(page_access, page_modify)):
