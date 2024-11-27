@@ -36,7 +36,7 @@ def process_page_step(process, pages, function, page_list = None):
         out = 0
     process.update_page_table((page, rw), frame_id, old_page)
     function.update((page, rw), page_id)
-    process.update_table(page, out)
+    process.update_table((page, rw), out)
     return out
 
 
