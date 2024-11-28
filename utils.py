@@ -11,6 +11,23 @@ def cal_tabulate_lines(table):
     table_lines = table.splitlines()
     return table_lines[1], len(table_lines)
 
+def show_fault_table(alg_faults, length_pages):
+    headers = ['', 'OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
+    tables = [['Number of missing pages'], ['Page missing rate']]
+    for fault in alg_faults:
+        tables[0].append(str(fault))
+        tables[1].append(f"{fault / length_pages * 100:.2f}%")
+    disp_tables = tabulate(tables, headers = headers, tablefmt = 'presto', stralign = 'center')
+    del_line, _ = cal_tabulate_lines(disp_tables)
+    title_texts = f"The Performance of Algorithms"
+    title_texts = title_texts.center(len(del_line))
+    title_texts = Fore.CYAN + title_texts + Fore.RESET
+
+    print('\n')
+    print(del_line)
+    print(title_texts)
+    print(del_line)
+    print(disp_tables)
 
 def show_all_table(table: list, delay: int = 1):
     algorithms = ['OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
