@@ -12,9 +12,10 @@ def cal_tabulate_lines(table):
     return table_lines[1], len(table_lines)
 
 def show_fault_table(alg_faults, length_pages):
-    headers = ['', 'OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
+    algorithms = list(alg_faults.keys())
+    headers = [''] + algorithms
     tables = [['Number of missing pages'], ['Page missing rate']]
-    for fault in alg_faults:
+    for fault in alg_faults.values():
         tables[0].append(str(fault))
         tables[1].append(f"{fault / length_pages * 100:.2f}%")
     disp_tables = tabulate(tables, headers = headers, tablefmt = 'presto', stralign = 'center')

@@ -55,7 +55,9 @@ if __name__ == '__main__':
 
     algorithms = ['OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
     algorithms_table = [None]
-    alg_faults = []
+    alg_faults = {}
+    for algorithm in algorithms:
+        alg_faults[algorithm] = 0
     for algorithm in algorithms:
         A.reset()
         alg_fun = eval(algorithm)(A.frame_size)
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         for pages in enumerate(zip(page_access, page_modify)):
             fault = process_page_step(A, pages, alg_fun, page_access)
             total_fault += fault
-        alg_faults.append(total_fault)
+        alg_faults[algorithm] = total_fault
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Page Table ---------------' + Fore.RESET)
         A.show_page_table(algorithm)
         # print(Fore.CYAN + f'--------------- {Style.BRIGHT}{algorithm}{Style.NORMAL} Frame Table ---------------' + Fore.RESET)
