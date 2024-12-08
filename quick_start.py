@@ -35,7 +35,7 @@ def process_page_step(process, pages, function, page_list = None):
     # Check if the page exists in memory or a page fault occurs
     if page_data is None or page_data[2] == 0:
         # Page fault: The requested page is not in memory
-        process.display_page_table((page, rw), flag = True)
+        process.display_page_table((page, rw), flag = 0)
         # Perform the page replacement step
         frame_id, old_page = function.step((page, rw), page_id, page_list)
         # Update the frame with the new page
@@ -43,7 +43,7 @@ def process_page_step(process, pages, function, page_list = None):
         page_fault = 1
     else:
         # Page is already in memory; no page fault
-        process.display_page_table((page, rw), flag = False)
+        process.display_page_table((page, rw), flag = 1)
         frame_id = process.frame_list.index(frame)
         page_fault = 0
 
