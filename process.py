@@ -70,7 +70,7 @@ class Process:
         print(del_line)
         print(welcome_text)
 
-    def display_page_table(self, pages, flag = 0):
+    def display_page_table(self, pages, flag = 0, delay = 0.5):
         page, rw = pages
         header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
                   "Swap Address" + Fore.RESET]
@@ -90,7 +90,7 @@ class Process:
         print(table)
         print(del_line)
         print(summary_text)
-        time.sleep(0.3)
+        time.sleep(delay)
         # 清
         clear_partial_lines(lines + 3)
 
