@@ -7,36 +7,52 @@ from colorama import Fore, init, Back, Style
 
 
 def process_page_step(process, pages, function, page_list = None):
-    # page_list is for OPT
+    """
+    Simulates a single step in the page access process for a given process.
+
+    Args:
+        process: The process object whose pages are being accessed.
+        pages: Tuple containing page ID and access type (read/write).
+        function: Page replacement strategy object with step and update methods.
+        page_list: Optional list of pages for certain strategies like OPT.
+
+    Returns:
+        int: 1 if a page fault occurs, otherwise 0.
+    """
+    # Unpack the page details
     page_id, (page, rw) = pages
 
+    # Check if the page number exceeds the total number of pages in the process
     if page >= process.total_pages:
         raise ValueError(f"Page {page} exceeds process total pages {process.total_pages}")
 
-    # 检查页表中是否已有该页记录
+    # Retrieve the process page table and data for the requested page
     page_table = process.page_table
-    page_data = page_table[page]  # list
-    frame = page_data[1]
+    page_data = page_table[page]
+    frame = page_data[1]  # Physical frame ID
     old_page = None
 
-    # 输出进程页表
-
+    # Check if the page exists in memory or a page fault occurs
     if page_data is None or page_data[2] == 0:
-        # 页面不存在 缺页中断
-        # print(f"缺页中断：进程 {process.pid} 访问页面 {page}")
-        process.display_page_table((page, rw), flag = 1)
+        # Page fault: The requested page is not in memory
+        process.display_page_table((page, rw), flag = True)
+        # Perform the page replacement step
         frame_id, old_page = function.step((page, rw), page_id, page_list)
-
+        # Update the frame with the new page
         process.frame[frame_id] = page
-        out = 1
+        page_fault = 1
     else:
-        process.display_page_table((page, rw), flag = 0)
+        # Page is already in memory; no page fault
+        process.display_page_table((page, rw), flag = False)
         frame_id = process.frame_list.index(frame)
-        out = 0
+        page_fault = 0
+
+    # Update the process page table and page replacement strategy state
     process.update_page_table((page, rw), frame_id, old_page)
     function.update((page, rw), page_id)
-    process.update_table((page, rw), out)
-    return out
+    # Update the memory table for visualization
+    process.update_table((page, rw), page_fault)
+    return page_fault
 
 if __name__ == '__main__':
     pid = 1
@@ -51,7 +67,7 @@ if __name__ == '__main__':
     }
     page_access = e_clock_pages['access']
     page_modify = e_clock_pages['modify']
-    fifo_fun = E_CLOCK(A.frame_size)
+    # fifo_fun = E_CLOCK(A.frame_size)
 
     algorithms = ['OPT', 'FIFO', 'LRU', 'S_CLOCK', "E_CLOCK"]
     algorithms_table = [None]

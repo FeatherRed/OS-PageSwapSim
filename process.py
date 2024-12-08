@@ -54,14 +54,6 @@ class Process:
             self.page_table[removed_page][3] -= 1
         self.page_table[page][3] += 1
 
-    def welcome(self, algoirthm_name):
-        del_line = "---------------------------------------------------------------------------------------------"
-        welcome_text = f"PID {self.pid} Use {algoirthm_name}"
-        welcome_text = welcome_text.center(len(del_line))
-        welcome_text = Back.WHITE + Fore.BLACK + welcome_text + Fore.RESET + Back.RESET
-        print(del_line)
-        print(welcome_text)
-
     def reset(self):
         self.access_history = []
 
@@ -69,6 +61,14 @@ class Process:
         self.frame = [-1] * self.frame_size
 
         self.headers, self.table = self.__build_table()
+
+    def welcome(self, algoirthm_name):
+        del_line = "---------------------------------------------------------------------------------------------"
+        welcome_text = f"PID {self.pid} Use {algoirthm_name}"
+        welcome_text = welcome_text.center(len(del_line))
+        welcome_text = Back.WHITE + Fore.BLACK + welcome_text + Fore.RESET + Back.RESET
+        print(del_line)
+        print(welcome_text)
 
     def display_page_table(self, pages, flag = 0):
         page, rw = pages
