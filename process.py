@@ -141,7 +141,7 @@ class Process:
         print(del_line)
         print(table)
 
-    def show_table(self, algorithm_name, delay = 0.3):
+    def show_table(self, algorithm_name, delay = 1):
         for i in range(len(self.headers)):
             j = i + 1
             tep_table = [row[:j] for row in self.table]
