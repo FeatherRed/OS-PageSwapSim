@@ -633,7 +633,6 @@ class E_CLOCK(BasicAlgorithm):
         self.modify_bit[index] = rw  # Update modify bit based on access type.
 
 
-# todo 可以把要修改的页面加flag 这样可以用在clock上面
 if __name__ == '__main__':
     pages = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
     fifo_pages = [1, 2, 3, 4, 2, 1, 5, 6, 2, 1, 2, 3, 7, 6, 3, 2, 1, 2, 3, 6]

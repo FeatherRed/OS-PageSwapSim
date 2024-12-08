@@ -7,6 +7,15 @@ from colorama import Fore, init, Back, Style
 
 class Process:
     def __init__(self, pid, frame_list, logic_size, page_size, access_window = 3):
+        """
+        Initializes a Process instance.
+
+        :param pid: Process ID
+        :param frame_list: List of physical frames allocated to the process
+        :param logic_size: Logical address space size in bytes
+        :param page_size: Page size in bytes
+        :param access_window: Size of the access history window for tracking recent accesses
+        """
         self.pid = pid
         self.frame_list = frame_list
         self.frame_size = len(frame_list)
@@ -23,6 +32,11 @@ class Process:
         self.headers, self.table = self.__build_table()
 
     def __str__(self):
+        """
+        String representation of the Process instance.
+
+        :return: Process details as a string
+        """
         return (f"Process {self.pid}:\n"
                 f"  页大小: {self.page_size} 字节\n"
                 f"  逻辑地址空间: {self.logic_size} 字节\n"
@@ -31,10 +45,11 @@ class Process:
                 f"  物理块序号: {self.frame_list}")
 
     def __build_page_table(self):
-        '''
-        创建页表、初始化数据项
-        :return:
-        '''
+        """
+        Creates and initializes the page table with default values.
+
+        :return: Initialized page table
+        """
         header = ["Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)", "Swap Address"]
         page_table = []
         for page in range(self.total_pages):
@@ -42,12 +57,22 @@ class Process:
         return page_table
 
     def __build_table(self):
+        """
+        Initializes the table structure for tracking frame usage.
+
+        :return: Table headers and table content
+        """
         header = ["Visit"]
         table = [["physical blocks-" + str(i)] for i in self.frame_list]
-        table.append(["Page missing"])  # 添加缺页行
+        table.append(["Page missing"])  # Adds a row for page faults
         return header, table
 
     def __update_access_history(self, page):
+        """
+        Updates the access history for a page and adjusts the access field.
+
+        :param page: Page number to update
+        """
         self.access_history.append(page)
         if len(self.access_history) > self.access_window:
             removed_page = self.access_history.pop(0)
@@ -55,6 +80,9 @@ class Process:
         self.page_table[page][3] += 1
 
     def reset(self):
+        """
+        Resets the process to its initial state.
+        """
         self.access_history = []
 
         self.page_table = self.__build_page_table()
@@ -63,6 +91,11 @@ class Process:
         self.headers, self.table = self.__build_table()
 
     def welcome(self, algoirthm_name):
+        """
+        Displays a welcome message for the selected algorithm.
+
+        :param algoirthm_name: Name of the algorithm being used
+        """
         del_line = "---------------------------------------------------------------------------------------------"
         welcome_text = f"PID {self.pid} Use {algoirthm_name}"
         welcome_text = welcome_text.center(len(del_line))
@@ -71,9 +104,15 @@ class Process:
         print(welcome_text)
 
     def display_page_table(self, pages, flag = 0, delay = 0.5):
+        """
+        Displays the page table with the current status.
+
+        :param pages: Tuple containing page number and read/write flag
+        :param flag: Indicates whether the page is in memory
+        :param delay: Time delay for displaying the page table
+        """
         page, rw = pages
-        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
-                  "Swap Address" + Fore.RESET]
+        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)", "Swap Address" + Fore.RESET]
         page_table = self.page_table
 
         table = tabulate(page_table, headers = header, tablefmt = 'presto', stralign = 'center', numalign = 'center', colalign = 'center')
@@ -91,13 +130,23 @@ class Process:
         print(del_line)
         print(summary_text)
         time.sleep(delay)
-        # 清
+        # Clear partial lines
         clear_partial_lines(lines + 3)
 
     def display_frame(self):
+        """
+        Displays the current frame contents.
+        """
         print(self.frame)
 
     def update_page_table(self, pages, frame_id, old_page):
+        """
+        Updates the page table based on the current operation.
+
+        :param pages: Tuple containing page number and read/write flag
+        :param frame_id: Frame index being updated
+        :param old_page: Page being replaced in memory
+        """
         page, rw = pages
 
         if old_page is not None:
@@ -117,17 +166,26 @@ class Process:
         self.__update_access_history(page)
 
     def update_table(self, pages, out):
+        """
+        Updates the frame table for display.
+
+        :param pages: Tuple containing page number and read/write flag
+        :param out: Indicates if a page fault occurred
+        """
         page, rw = pages
         self.headers.append(Fore.RED + str(page) + Fore.RESET if rw else Fore.BLUE + str(page) + Fore.RESET)
         new_column = [str(i) if i > -1 else "" for i in self.frame]
         new_column.append("√" if out else "")
         for i in range(len(self.table)):
             self.table[i].append(new_column[i])
-        # self.__show_table()
 
     def show_page_table(self, algorithm_name):
-        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)",
-                  "Swap Address" + Fore.RESET]
+        """
+        Displays the current page table with the specified algorithm name.
+
+        :param algorithm_name: Name of the algorithm used
+        """
+        header = [Fore.RED + "Page", "Frame", "Status Bit(P)", "Access Field(A)", "Modified Bit(M)", "Swap Address" + Fore.RESET]
         page_table = self.page_table
 
         table = tabulate(page_table, headers = header, tablefmt = 'presto')
@@ -142,6 +200,12 @@ class Process:
         print(table)
 
     def show_table(self, algorithm_name, delay = 1):
+        """
+        Displays the frame usage table.
+
+        :param algorithm_name: Name of the algorithm used
+        :param delay: Delay between updates
+        """
         for i in range(len(self.headers)):
             j = i + 1
             tep_table = [row[:j] for row in self.table]

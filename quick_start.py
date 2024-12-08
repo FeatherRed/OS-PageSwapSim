@@ -54,6 +54,7 @@ def process_page_step(process, pages, function, page_list = None):
     process.update_table((page, rw), page_fault)
     return page_fault
 
+
 if __name__ == '__main__':
     pid = 1
     page_size = 4096  # 4KB
@@ -93,4 +94,3 @@ if __name__ == '__main__':
         print('\n\n')
     show_all_table(algorithms_table)
     show_fault_table(alg_faults, len(page_access))
-
