@@ -1,4 +1,27 @@
-# 操作系统大作业
+# OS-PageSwapSim
+
+Simulate and analyze OS page replacement algorithms with Python.
+
+## Overview
+```
+📂
+├── algorithms.py      # Contains page replacement algorithms like OPT, FIFO, LRU, etc.
+├── main.py            # Entry point of the project; coordinates the simulation workflow.
+├── process.py         # Handles the page access simulation and sequence generation.
+├── quick_start.py     # Provides a quick start script with simple examples or tests.
+├── README.md          
+├── utils.py           # Utility functions for tasks like table formatting and statistics.
+```
+
+
+
+## Quick Start
+
+```python
+python quick_start.py
+```
+
+
 
 1. 编程实现OPT算法、FIFO算法、LRU算法、简单时钟算法和改进时钟算法;
 2. 编程实现页面访问序列的随机化机制，包括设置每个页面的读写访问方式，以满足改进时钟算法的要求。
@@ -25,17 +48,3 @@
 **固定分配：**准备时候给每个进程分配的物理块固定 运行时数量固定 按照分配数量
 
 **局部替换：**进程缺页时，进程独立 置换分配给自身的物理块
-
-
-
-### 2024-11-24
-
-思路：先把算法定义成一个基类 然后继承
-
-把算法写完后，然后针对`main.py`进行信息播报
-
-接着定义`config`接口，可以随意设置大小 种子参数  
-
-然后再开一个专门测试的接口，可以自由选择开启 默认可以
-
-多次测试只需要设置多组数据然后测试

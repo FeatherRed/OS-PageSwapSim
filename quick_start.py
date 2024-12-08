@@ -1,7 +1,7 @@
 import time
 import os
 from process import Process
-from Algorithms import FIFO, OPT, LRU, S_CLOCK, E_CLOCK
+from algorithms import FIFO, OPT, LRU, S_CLOCK, E_CLOCK
 from utils import *
 from colorama import Fore, init, Back, Style
 
