@@ -21,7 +21,9 @@ Simulate and analyze OS page replacement algorithms with Python.
 python quick_start.py
 ```
 
+![](image/Gif1.gif)
 
+![](image/Gif2.gif)
 
 1. 编程实现OPT算法、FIFO算法、LRU算法、简单时钟算法和改进时钟算法;
 2. 编程实现页面访问序列的随机化机制，包括设置每个页面的读写访问方式，以满足改进时钟算法的要求。
