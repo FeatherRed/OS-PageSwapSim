@@ -55,16 +55,21 @@ def lru(pages, frame_size):
     frame = []
     page_faults = 0
     page_indices = {}
-
+    page_frame_idx = {}
     for i, page in enumerate(pages):
         if page not in frame:
             if len(frame) < frame_size:
                 frame.append(page)
+                page_frame_idx[page] = len(frame) - 1
             else:
                 lru_page = min(page_indices, key = page_indices.get)
-                page_index = page_indices[lru_page] % frame_size
-                frame[page_index] = page
+                frame_index = page_frame_idx[lru_page]
+
+                # page_index = page_indices[lru_page] % frame_size
+                frame[frame_index] = page
+                page_frame_idx[page] = frame_index
                 del page_indices[lru_page]  # delete key
+                del page_frame_idx[lru_page]
             page_faults += 1
         page_indices[page] = i
 
@@ -354,6 +359,7 @@ class LRU(BasicAlgorithm):
         """
         super().__init__(frame_size)
         self.page_indices = {}  # Tracks the last access index of pages.
+        self.page_frame_idx = {} # page -> frame_idx
 
     def reset(self):
         """
@@ -361,6 +367,7 @@ class LRU(BasicAlgorithm):
         """
         super().reset()  # Reset the frame using the base class method.
         self.page_indices = {}  # Clear the page access tracking dictionary.
+        self.page_frame_idx = {}
 
     def step(self, pages, page_index = None, page_list = None):
         """
@@ -391,15 +398,18 @@ class LRU(BasicAlgorithm):
             # Frame is not full; add the page.
             self.frame.append(page)
             frame_id = len(self.frame) - 1
+            self.page_frame_idx[page] = frame_id
         else:
             # Frame is full; replace the least recently used page.
             lru_page = min(self.page_indices, key = self.page_indices.get)  # Identify LRU page.
-            frame_id = self.page_indices[lru_page] % self.frame_size  # Find its index in the frame.
+            frame_id = self.page_frame_idx[lru_page]  # Find its index in the frame.
             old_page = self.frame[frame_id]
 
             # Replace the least recently used page.
             self.frame[frame_id] = page
+            self.page_frame_idx[page] = frame_id
             del self.page_indices[lru_page]  # Remove the LRU page from tracking.
+            del self.page_frame_idx[lru_page]
 
         return frame_id, old_page
 
@@ -649,6 +659,6 @@ if __name__ == '__main__':
     enhanced_clock_pages = [0, 1, 3, 6, 2, 4, 5, 2, 5, 0, 3, 1, 2, 5, 4, 1, 0]
     enhanced_clock_pages_rw = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
 
-    print(simple_clock(enhanced_clock_pages, main_num))
+    print(lru(enhanced_clock_pages, main_num))
     # T1 = time.perf_counter()
     # print((T1 - T0) * 1000)
