@@ -63,8 +63,8 @@ if __name__ == '__main__':
     A = Process(pid, frame_list, logic_size, page_size)
 
     e_clock_pages = {
-        'access': [0, 1, 2, 3, 1, 0, 4, 5, 1, 0, 1, 2, 6, 5, 2, 1, 0, 1, 2, 5, 6, 0, 4, 1],
-        'modify': [0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1]
+        'access': [0, 1, 2, 3, 1, 0, 4, 5, 1, 0, 1, 2, 6, 5, 2, 1, 0, 1, 2, 5],
+        'modify': [0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1]
     }
     page_access = e_clock_pages['access']
     page_modify = e_clock_pages['modify']
